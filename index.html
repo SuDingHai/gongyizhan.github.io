@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>哈基米公益站</title>
+  <style>
+    :root {
+      --bg-1: #fff9ff;
+      --bg-2: #f6fbff;
+      --glass-bg: rgba(255, 255, 255, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.7);
+      --text: #1f2330;
+      --accent-orange: #FF9933;
+      --accent-yellow: #FFB84D;
+      --accent-peach: #FFCC66;
+      --accent-gold: #FFA500;
+      --shadow: 0 10px 30px rgba(31, 35, 48, 0.12), 0 2px 8px rgba(31, 35, 48, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1200px 1200px at 85% -10%, rgba(255, 184, 77, 0.25), transparent 60%),
+        radial-gradient(900px 900px at -10% 95%, rgba(255, 204, 102, 0.25), transparent 55%),
+        linear-gradient(135deg, #fffdf8 0%, #fff9f0 100%);
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      color: var(--text);
+    }
+
+    .hero {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 4vh 4vw;
+      overflow: hidden;
+      isolation: isolate;
+      gap: 2.5rem;
+    }
+
+    /* Glassy card for title + logo */
+    .title-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: clamp(14px, 2.5vw, 28px);
+      padding: clamp(10px, 2vw, 16px) clamp(16px, 3.5vw, 28px);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px) saturate(120%);
+      -webkit-backdrop-filter: blur(10px) saturate(120%);
+      transform: translateZ(0);
+    }
+
+    .title {
+      margin: 0;
+      font-family: "Microsoft YaHei", sans-serif;
+      font-weight: 400;
+      font-size: clamp(32px, 6vw, 80px);
+      letter-spacing: 0.1em;
+      line-height: 1.15;
+      display: inline-flex;
+    }
+
+    .char {
+      display: inline-block;
+      background: linear-gradient(
+        120deg, 
+        var(--accent-gold), 
+        var(--accent-orange), 
+        var(--accent-yellow),
+        var(--accent-peach),
+        var(--accent-orange)
+      );
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 2px 8px rgba(255, 153, 51, 0.25)) blur(0px);
+      transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: default;
+      transform-origin: center center;
+      will-change: transform, filter, background-position;
+      position: relative;
+      animation: gradientFlow 4s ease-in-out infinite;
+    }
+
+    .title:hover .char:not(:hover) {
+      filter: drop-shadow(0 2px 8px rgba(255, 153, 51, 0.15)) blur(3px);
+      opacity: 0.5;
+      transform: scale(0.95);
+    }
+
+    .char:hover {
+      transform: scale(1.3) translateY(-2px);
+      filter: drop-shadow(0 6px 20px rgba(255, 153, 51, 0.6)) 
+              drop-shadow(0 0 30px rgba(255, 184, 77, 0.5)) blur(0px) !important;
+      opacity: 1 !important;
+    }
+
+    .logo {
+      height: clamp(40px, 8vw, 80px);
+      width: auto;
+      aspect-ratio: auto;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(31, 35, 48, 0.10), 
+                  inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.65);
+      display: block;
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+      transform-origin: center center;
+      will-change: transform, box-shadow, filter;
+      position: relative;
+    }
+
+    .logo:hover {
+      transform: scale(1.18) translateY(-4px) rotateZ(2deg);
+      box-shadow: 0 12px 35px rgba(178, 155, 255, 0.35), 
+                  0 0 40px rgba(255, 155, 210, 0.25),
+                  inset 0 0 0 1.5px rgba(255, 255, 255, 0.8);
+      filter: brightness(1.08) saturate(1.15);
+    }
+
+    /* Decorative floating shapes */
+    .decorations { position: absolute; inset: 0; pointer-events: none; z-index: -1; }
+    .bubble, .star, .spark { position: absolute; filter: blur(0.2px); }
+
+    .bubble {
+      width: var(--sz);
+      height: var(--sz);
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.85), rgba(255,255,255,0.4) 45%, rgba(255,255,255,0.05) 70%, rgba(255,255,255,0) 100%),
+                  radial-gradient(circle at 60% 60%, rgba(255, 184, 77, 0.3), rgba(255, 204, 102, 0.3));
+      box-shadow: 0 8px 24px rgba(255, 153, 51, 0.15);
+    }
+
+    .star {
+      width: var(--sz);
+      height: var(--sz);
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.9) 0 40%, rgba(255,255,255,0) 50%),
+        conic-gradient(from 0deg, rgba(255, 184, 77, 0.85), rgba(255, 204, 102, 0.85), rgba(255, 153, 51, 0.85), rgba(255, 184, 77, 0.85));
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      opacity: 0.65;
+    }
+
+    .spark {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(255,255,255,0.2));
+      box-shadow: 0 0 12px rgba(255,255,255,0.8);
+      animation: twinkle 2.6s ease-in-out infinite;
+    }
+
+    /* Model cards section */
+    .models-wrapper {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .info-box {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px) saturate(120%);
+      -webkit-backdrop-filter: blur(10px) saturate(120%);
+    }
+
+    .models-section {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px) saturate(120%);
+      -webkit-backdrop-filter: blur(10px) saturate(120%);
+    }
+
+    .models-title {
+      font-family: "Microsoft YaHei", sans-serif;
+      font-size: clamp(20px, 3.5vw, 28px);
+      font-weight: 600;
+      text-align: center;
+      color: var(--text);
+      margin: 0 0 1.5rem 0;
+      background: linear-gradient(
+        120deg, 
+        var(--accent-gold), 
+        var(--accent-orange), 
+        var(--accent-yellow)
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .info-item {
+      font-family: "Microsoft YaHei", sans-serif;
+      font-size: clamp(13px, 1.8vw, 16px);
+      color: var(--text);
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .info-item::before {
+      content: "🎁";
+      font-size: 1.1em;
+      flex-shrink: 0;
+    }
+
+    .info-highlight {
+      color: var(--accent-orange);
+      font-weight: 600;
+    }
+
+    .qq-group {
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .qq-group:hover {
+      background: rgba(255, 153, 51, 0.1);
+      transform: scale(1.05);
+    }
+
+    .qq-group:active {
+      transform: scale(0.98);
+    }
+
+    .models-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .model-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px) saturate(120%);
+      -webkit-backdrop-filter: blur(10px) saturate(120%);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .model-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(31, 35, 48, 0.18), 0 4px 12px rgba(31, 35, 48, 0.08);
+      border-color: var(--accent-orange);
+    }
+
+    .model-card:active {
+      transform: translateY(-2px);
+    }
+
+    .model-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .model-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .model-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .model-name {
+      font-family: "Microsoft YaHei", sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+      word-break: break-word;
+    }
+
+    /* Layout tweaks on narrow screens */
+    .title-row { display: inline-flex; align-items: center; gap: clamp(12px, 2vw, 20px); }
+    @media (max-width: 520px) {
+      .title-wrap { padding: 10px 14px; border-radius: 14px; }
+      .title-row { gap: 10px; }
+      .logo { height: clamp(36px, 10vw, 60px); border-radius: 12px; }
+      .models-grid { grid-template-columns: 1fr; }
+      .models-section { padding: 1.25rem; }
+      .info-box { padding: 0.85rem 1.25rem; }
+      .hero { gap: 1.5rem; }
+    }
+
+    /* Animations */
+    @keyframes gradientFlow {
+      0%, 100% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { transform: scale(0.9); opacity: 0.35; }
+      50% { transform: scale(1.15); opacity: 0.9; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+
+    /* 复制提示 */
+    .copy-toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px) saturate(120%);
+      -webkit-backdrop-filter: blur(10px) saturate(120%);
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(31, 35, 48, 0.25);
+      font-family: "Microsoft YaHei", sans-serif;
+      font-size: 1.1rem;
+      color: var(--text);
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .copy-toast.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .copy-toast::before {
+      content: "✓";
+      display: inline-block;
+      margin-right: 0.5rem;
+      color: var(--accent-orange);
+      font-weight: bold;
+      font-size: 1.3em;
+    }
+
+    /* 滚动淡入动画 */
+    .fade-in-element {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .fade-in-element.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 加载动画 */
+    .page-loader {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #fffdf8 0%, #fff9f0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+    }
+
+    .page-loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(255, 153, 51, 0.2);
+      border-top-color: var(--accent-orange);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loader-text {
+      margin-top: 1.5rem;
+      font-family: "Microsoft YaHei", sans-serif;
+      font-size: 1.1rem;
+      color: var(--text);
+      opacity: 0.8;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- 加载动画 -->
+  <div class="page-loader" id="pageLoader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">加载中...</div>
+  </div>
+
+  <!-- 复制提示 -->
+  <div class="copy-toast" id="copyToast">已复制</div>
+  <main class="hero">
+    <div class="decorations" aria-hidden="true">
+      <span class="bubble" style="--sz: 180px; --dur: 7.5s; --from: 0px; left: 6%; top: 68%;"></span>
+      <span class="bubble" style="--sz: 240px; --dur: 9s; --from: -20px; right: 4%; top: 8%;"></span>
+      <span class="star" style="--sz: 48px; --dur: 6.5s; left: 18%; top: 22%;"></span>
+      <span class="star" style="--sz: 36px; --dur: 7.2s; right: 22%; bottom: 18%;"></span>
+      <span class="spark" style="left: 50%; top: 20%; animation-delay: .2s"></span>
+      <span class="spark" style="left: 12%; top: 52%; animation-delay: .9s"></span>
+      <span class="spark" style="right: 16%; top: 40%; animation-delay: 1.5s"></span>
+    </div>
+
+    <section class="title-wrap fade-in-element" aria-label="">
+      <div class="title-row">
+        <img class="logo" src="https://youke1.picui.cn/s1/2025/10/13/68ebe195c6f40.png" alt="">
+        <h1 class="title">
+          <span class="char">哈</span><span class="char">基</span><span class="char">米</span><span class="char">公</span><span class="char">益</span><span class="char">站</span>
+        </h1>
+      </div>
+    </section>
+
+    <div class="models-wrapper fade-in-element">
+      <div class="info-box">
+        <p class="info-item">新用户注册免费调用<span class="info-highlight">500次</span></p>
+        <p class="info-item">加入QQ群聊每天送免费额度 <span class="info-highlight qq-group" onclick="copyText('838132984')" title="点击复制QQ群号">838132984</span></p>
+      </div>
+
+      <section class="models-section">
+        <h2 class="models-title">可用模型</h2>
+        <div class="models-grid">
+          <!-- Model Card 1 -->
+          <div class="model-card" onclick="copyText('gemini-2.5-flash')" title="点击复制模型名称">
+            <div class="model-header">
+              <div class="model-icon">
+                <img src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/gemini-color.png" alt="Gemini">
+              </div>
+              <h3 class="model-name">gemini-2.5-flash</h3>
+            </div>
+          </div>
+
+          <!-- Model Card 2 -->
+          <div class="model-card" onclick="copyText('gemini-2.5-flash-image')" title="点击复制模型名称">
+            <div class="model-header">
+              <div class="model-icon">
+                <img src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/gemini-color.png" alt="Gemini">
+              </div>
+              <h3 class="model-name">gemini-2.5-flash-image</h3>
+            </div>
+          </div>
+
+          <!-- Model Card 3 -->
+          <div class="model-card" onclick="copyText('gemini-2.5-pro')" title="点击复制模型名称">
+            <div class="model-header">
+              <div class="model-icon">
+                <img src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/gemini-color.png" alt="Gemini">
+              </div>
+              <h3 class="model-name">gemini-2.5-pro</h3>
+            </div>
+          </div>
+
+          <!-- Model Card 4 -->
+          <div class="model-card" onclick="copyText('gemini-2.5-pro-preview-05-06')" title="点击复制模型名称">
+            <div class="model-header">
+              <div class="model-icon">
+                <img src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/gemini-color.png" alt="Gemini">
+              </div>
+              <h3 class="model-name">gemini-2.5-pro-preview-05-06</h3>
+            </div>
+          </div>
+
+          <!-- Model Card 5 -->
+          <div class="model-card" onclick="copyText('gemini-2.5-pro-preview-06-05')" title="点击复制模型名称">
+            <div class="model-header">
+              <div class="model-icon">
+                <img src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/gemini-color.png" alt="Gemini">
+              </div>
+              <h3 class="model-name">gemini-2.5-pro-preview-06-05</h3>
+            </div>
+          </div>
+
+          <!-- Model Card 6 -->
+          <div class="model-card" onclick="copyText('gemini-2.5-pro-search')" title="点击复制模型名称">
+            <div class="model-header">
+              <div class="model-icon">
+                <img src="https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/gemini-color.png" alt="Gemini">
+              </div>
+              <h3 class="model-name">gemini-2.5-pro-search</h3>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // 复制文本功能
+    function copyText(text) {
+      // 使用 Clipboard API
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showCopyToast();
+        }).catch(() => {
+          // 降级方案
+          fallbackCopy(text);
+        });
+      } else {
+        // 降级方案
+        fallbackCopy(text);
+      }
+    }
+
+    // 降级复制方法
+    function fallbackCopy(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showCopyToast();
+      } catch (err) {
+        console.error('复制失败', err);
+      }
+      document.body.removeChild(textarea);
+    }
+
+    // 显示复制提示
+    function showCopyToast() {
+      const toast = document.getElementById('copyToast');
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // 滚动淡入动画
+    function initScrollAnimation() {
+      const fadeElements = document.querySelectorAll('.fade-in-element');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      });
+
+      fadeElements.forEach(element => {
+        observer.observe(element);
+      });
+    }
+
+    // 页面加载完成
+    window.addEventListener('load', () => {
+      // 隐藏加载动画
+      const loader = document.getElementById('pageLoader');
+      setTimeout(() => {
+        loader.classList.add('hidden');
+      }, 500);
+
+      // 初始化滚动动画
+      initScrollAnimation();
+    });
+
+    // 如果页面已经加载完成（比如从缓存加载）
+    if (document.readyState === 'complete') {
+      const loader = document.getElementById('pageLoader');
+      loader.classList.add('hidden');
+      initScrollAnimation();
+    }
+  </script>
+</body>
+</html>
+
